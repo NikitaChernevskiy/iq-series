@@ -1,0 +1,20 @@
+## Episode 1 issues
+
+**Template defaults**
+- Default region was East US 2 - AI Search has no capacity there (won't be fixed before 2027)
+- Default resource prefix is too long - pushes the storage account name past Azure's 24-char limit. Had to shorten it to `nch`
+
+**No instructions for creating AI Search manually**
+The template failed on AI Search, so I created it by hand - but the README didn't say what settings it needs. Missing instructions:
+- Set auth to "Both" (Key + RBAC) - default is API-key-only, which blocks `DefaultAzureCredential`
+- Turn on system-assigned managed identity - the knowledge base needs it to call Azure OpenAI
+
+**RBAC roles the user has to assign themselves**
+The template does assign user + Search MI roles, but only on the Search service it deploys. Because AI Search had to be created manually, none of those role assignments applied to it. The README's "manual setup" path needs to list:
+- To you on AI Search: `Search Service Contributor`, `Search Index Data Contributor`, `Search Index Data Reader`
+- To the AI Search managed identity on AOAI: `Cognitive Services OpenAI User`
+- To the Foundry project managed identity on AI Search: `Search Service Contributor` + `Search Index Data Reader` (this one is missing from the template too - the agent's MCP tool needs it)
+
+**Bugs in the notebook code**
+- `FOUNDRY_PROJECT_RESOURCE_ID` example used the old `Microsoft.MachineLearningServices/...` path. Foundry projects now live under `Microsoft.CognitiveServices/accounts/.../projects/...`
+- Wrong ARM api-version (`2025-10-01-preview`); should be `2025-06-01`

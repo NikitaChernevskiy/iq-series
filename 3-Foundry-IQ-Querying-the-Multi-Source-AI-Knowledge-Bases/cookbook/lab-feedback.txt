@@ -1,0 +1,7 @@
+## Episode 3 issues
+
+**Step 2 - Minimal reasoning effort cell**
+Sends `messages=[...]`, but `minimal` effort rejects messages and requires `intents=[KnowledgeRetrievalSemanticIntent(search="...")]`.
+
+**Step 5 - Side-by-side comparison cell**
+Same bug - the loop sends `messages` for all three levels, so the `minimal` iteration fails. Needs to branch and use `intents` for minimal.
